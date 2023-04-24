@@ -1,4 +1,4 @@
-# Advanced CLIP Text Encode
+# ComfyUI Noise
 
 This repo contains 6 nodes for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) that allows for more control and flexibility over the noise. This allows e.g. for workflows with small variations to generations. Currently these nodes require a fork of ComfyUI to function properly which you can find [here](https://github.com/BlenderNeko/ComfyUI).
 
