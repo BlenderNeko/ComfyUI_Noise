@@ -173,7 +173,10 @@ class Unsampler:
         latent_image = latent["samples"]
         
         noise = torch.zeros(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, device="cpu")
-        noise_mask = comfy.sample.create_mask(latent, noise)
+        
+        noise_mask = None
+        if "noise_mask" in latent:
+            noise_mask = comfy.sample.prepare_mask(latent["noise_mask"], noise)
 
         real_model = None
         comfy.model_management.load_model_gpu(model)
