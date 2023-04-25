@@ -116,15 +116,16 @@ class GetSigma:
     CATEGORY = "latent/noise"
         
     def calc_sigma(self, model, sampler_name, scheduler, steps, start_at_step, end_at_step):
+        device = comfy.model_management.get_torch_device()
         end_at_step = min(steps, end_at_step)
         start_at_step = min(start_at_step, end_at_step)
         real_model = None
         comfy.model_management.load_model_gpu(model)
         real_model = model.model
-        sigmas = comfy.samplers.calculate_sigmas(real_model, steps, scheduler, sampler_name)
-        sigma = sigmas[start_at_step] - sigmas[end_at_step] 
-        print(sigma)
-        return (sigma.numpy(),)
+        sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
+        sigmas = sampler.sigmas
+        sigma = sigmas[start_at_step] - sigmas[end_at_step]
+        return (sigma.cpu().numpy(),)
 
 class InjectNoise:
     @classmethod
@@ -173,10 +174,9 @@ class Unsampler:
         latent_image = latent["samples"]
         
         noise = torch.zeros(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, device="cpu")
-        
         noise_mask = None
         if "noise_mask" in latent:
-            noise_mask = comfy.sample.prepare_mask(latent["noise_mask"], noise)
+            noise_mask = comfy.sample.prepare_mask(latent["noise_mask"], noise, device)
 
         real_model = None
         comfy.model_management.load_model_gpu(model)
@@ -185,14 +185,14 @@ class Unsampler:
         noise = noise.to(device)
         latent_image = latent_image.to(device)
 
-        positive_copy = comfy.sample.broadcast_cond(positive, noise)
-        negative_copy = comfy.sample.broadcast_cond(negative, noise)
+        positive_copy = comfy.sample.broadcast_cond(positive, noise.shape[0], device)
+        negative_copy = comfy.sample.broadcast_cond(negative, noise.shape[0], device)
 
         models = comfy.sample.load_additional_models(positive, negative)
 
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
-        sigmas = comfy.samplers.calculate_sigmas(real_model, steps + 1, scheduler, sampler_name).flip(0).to(device)[1:]
+        sigmas = sigmas = sampler.sigmas.flip(0)[1:] + 0.0001
 
         samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas)
         samples = samples.cpu()
