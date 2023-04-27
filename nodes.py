@@ -204,19 +204,19 @@ class Unsampler:
         return (out, )
     
 NODE_CLASS_MAPPINGS = {
-    "NoisyLatentImage": NoisyLatentImage,
-    "DuplicateBatchIndex": DuplicateBatchIndex,
-    "LatentSlerp": LatentSlerp,
-    "GetSigma": GetSigma,
-    "InjectNoise": InjectNoise,
-    "Unsampler": Unsampler,
+    "BNK_NoisyLatentImage": NoisyLatentImage,
+    "BNK_DuplicateBatchIndex": DuplicateBatchIndex,
+    "BNK_SlerpLatent": LatentSlerp,
+    "BNK_GetSigma": GetSigma,
+    "BNK_InjectNoise": InjectNoise,
+    "BNK_Unsampler": Unsampler,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "NoisyLatentImage": "Noisy Latent Image",
-    "DuplicateBatchIndex": "Duplicate Batch Index",
-    "LatentSlerp": "Slerp Latents",
-    "GetSigma": "Get Sigma",
-    "InjectNoise": "Inject Noise",
-    "Unsampler": "Unsampler",
+    "BNK_NoisyLatentImage": "Noisy Latent Image",
+    "BNK_DuplicateBatchIndex": "Duplicate Batch Index",
+    "BNK_SlerpLatent": "Slerp Latents",
+    "BNK_GetSigma": "Get Sigma",
+    "BNK_InjectNoise": "Inject Noise",
+    "BNK_Unsampler": "Unsampler",
 }
