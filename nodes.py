@@ -123,7 +123,7 @@ class GetSigma:
             "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
             "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
             "steps": ("INT", {"default": 10000, "min": 0, "max": 10000}),
-            "start_at_step": ("INT", {"default": 1, "min": 0, "max": 10000}),
+            "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
             "end_at_step": ("INT", {"default": 10000, "min": 1, "max": 10000}),
             }}
     
