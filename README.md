@@ -21,7 +21,8 @@ This node lets you duplicate a certain sample in the batch, this can be used to 
 ### Slerp Latents:
 This node lets you mix two latents together. Both of the input latents must share the same dimensions or the node will ignore the mix factor and instead output the top slot. When it comes to other things attached to the latents such as e.g. masks, only those of the top slot are passed on. You can find this node under `latent` and it comes with the following inputs:
 - **latents1**: first batch of latents.
-- **latents2**: second batch of latents
+- **latents2**: second batch of latents. This input is optional.
+- **mask**: determines where in the latents to slerp. This input is optional
 - **factor**: how much of the second batch of latents should be slerped into the first.
 
 ### Get Sigma:
@@ -38,13 +39,15 @@ Most of the time you'd simply want to keep `start_at_step` at zero, and `end_at_
 ### Inject Noise:
 This node lets you actually inject the noise into an image latent, you can find this node under `latent>noise` and it comes with the following inputs:
 - **latents**: The latents to inject the noise into.
-- **noise**: The noise.
+- **noise**: The noise. This input is optional
+- **mask**: determines where to inject noise. This input is optional
 - **strength**: The strength of the noise. Note that we can use the node above to calculate for us an appropriate strength value.
 
 ### Unsampler:
 This node does the reverse of a sampler. It calculates the noise that would generate the image given the model and the prompt. You can find this node under `sampling` and it takes the following inputs and settings:
 - **model**: The model to target.
 - **steps**: number of steps to noise.
+- **end_step**: to what step to travel back to.
 - **cfg**: classifier free guidance scale.
 - **sampler_name**: The name of the sampling technique to use.
 - **scheduler**: The type of schedule to use.
