@@ -10,14 +10,21 @@ import comfy.sample
 
 MAX_RESOLUTION=8192
 
+def prepare_mask(mask, shape):
+    mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(shape[2], shape[3]), mode="bilinear")
+    mask = mask.expand((-1,shape[1],-1,-1))
+    if mask.shape[0] < shape[0]:
+        mask = mask.repeat((shape[0] -1) / mask.shape[0] + 1, 1, 1, 1)[:shape[0]]
+    return mask
+
 class NoisyLatentImage:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
             "source":(["CPU", "GPU"], ),
             "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-            "width": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 64}),
-            "height": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 64}),
+            "width": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+            "height": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
             "batch_size": ("INT", {"default": 1, "min": 1, "max": 64}),
             }}
     RETURN_TYPES = ("LATENT",)
@@ -79,10 +86,14 @@ def slerp(val, low, high):
 class LatentSlerp:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {
-            "latents1":("LATENT",),
-            "latents2":("LATENT",),
-            "factor": ("FLOAT", {"default": .5, "min": 0.0, "max": 1.0, "step": 0.01}),
+        return {
+            "required": {
+                "latents1":("LATENT",),
+                "factor": ("FLOAT", {"default": .5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            },
+            "optional" :{
+                "latents2":("LATENT",),
+                "mask": ("MASK", ),
             }}
     
     RETURN_TYPES = ("LATENT",)
@@ -90,12 +101,18 @@ class LatentSlerp:
 
     CATEGORY = "latent"
         
-    def slerp_latents(self, latents1, latents2, factor):
+    def slerp_latents(self, latents1, factor, latents2=None, mask=None):
         s = latents1.copy()
+        if latents2 is None:
+            return (s,)
         if latents1["samples"].shape != latents2["samples"].shape:
             print("warning, shapes in LatentSlerp not the same, ignoring")
             return (s,)
-        s["samples"] = slerp(factor, latents1["samples"].clone(), latents2["samples"].clone())
+        slerped = slerp(factor, latents1["samples"].clone(), latents2["samples"].clone())
+        if mask is not None:
+            mask = prepare_mask(mask, slerped.shape)
+            slerped = mask * slerped + (1-mask) * latents1["samples"]
+        s["samples"] = slerped
         return (s,)
 
 class GetSigma:
@@ -106,8 +123,8 @@ class GetSigma:
             "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
             "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
             "steps": ("INT", {"default": 10000, "min": 0, "max": 10000}),
-            "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
-            "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
+            "start_at_step": ("INT", {"default": 1, "min": 0, "max": 10000}),
+            "end_at_step": ("INT", {"default": 10000, "min": 1, "max": 10000}),
             }}
     
     RETURN_TYPES = ("FLOAT",)
@@ -132,8 +149,12 @@ class InjectNoise:
     def INPUT_TYPES(s):
         return {"required": {
             "latents":("LATENT",),
-            "noise":  ("LATENT",),
+            
             "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 20.0, "step": 0.01}),
+            },
+            "optional":{
+                "noise":  ("LATENT",),
+                "mask": ("MASK", ),
             }}
     
     RETURN_TYPES = ("LATENT",)
@@ -141,12 +162,20 @@ class InjectNoise:
 
     CATEGORY = "latent/noise"
         
-    def inject_noise(self, latents, noise, strength):
+    def inject_noise(self, latents, strength, noise=None, mask=None):
         s = latents.copy()
+        if noise is None:
+            return (s,)
         if latents["samples"].shape != noise["samples"].shape:
             print("warning, shapes in InjectNoise not the same, ignoring")
             return (s,)
-        s["samples"] = s["samples"].clone() + noise["samples"].clone() * strength
+        noised = s["samples"].clone() + noise["samples"].clone() * strength
+        if mask is not None:
+            mask = prepare_mask(mask, noised.shape)
+            print(mask.shape)
+            print(noised.shape)
+            noised = mask * noised + (1-mask) * latents["samples"]
+        s["samples"] = noised
         return (s,)
     
 class Unsampler:
@@ -155,6 +184,7 @@ class Unsampler:
         return {"required":
                     {"model": ("MODEL",),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "end_at_step": ("INT", {"default": 1, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
@@ -168,10 +198,13 @@ class Unsampler:
 
     CATEGORY = "sampling"
         
-    def unsampler(self, model, cfg, sampler_name, steps, scheduler, positive, negative, latent_image):
+    def unsampler(self, model, cfg, sampler_name, steps, end_at_step, scheduler, positive, negative, latent_image):
         device = comfy.model_management.get_torch_device()
         latent = latent_image
         latent_image = latent["samples"]
+
+        end_at_step = min(end_at_step, steps-1)
+        end_at_step = steps - end_at_step
         
         noise = torch.zeros(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, device="cpu")
         noise_mask = None
@@ -192,9 +225,13 @@ class Unsampler:
 
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
-        sigmas = sigmas = sampler.sigmas.flip(0)[1:] + 0.0001
+        sigmas = sigmas = sampler.sigmas.flip(0) + 0.0001
 
-        samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas)
+        pbar = comfy.utils.ProgressBar(steps)
+        def callback(step, x0, x, total_steps):
+            pbar.update_absolute(step + 1, total_steps)
+
+        samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas, start_step=0, last_step=end_at_step, callback=callback)
         samples = samples.cpu()
         
         comfy.sample.cleanup_additional_models(models)
