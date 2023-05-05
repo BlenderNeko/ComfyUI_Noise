@@ -1,47 +1,7 @@
 {
-  "last_node_id": 26,
-  "last_link_id": 61,
+  "last_node_id": 27,
+  "last_link_id": 66,
   "nodes": [
-    {
-      "id": 20,
-      "type": "VAEEncode",
-      "pos": [
-        354,
-        894
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pixels",
-          "type": "IMAGE",
-          "link": 34
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 51
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            45
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEEncode"
-      }
-    },
     {
       "id": 23,
       "type": "Reroute",
@@ -80,80 +40,6 @@
       }
     },
     {
-      "id": 26,
-      "type": "Reroute",
-      "pos": [
-        450,
-        670
-      ],
-      "size": [
-        75,
-        26
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 59
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "CONDITIONING",
-          "links": [
-            60,
-            61
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": false,
-        "horizontal": false
-      }
-    },
-    {
-      "id": 25,
-      "type": "Reroute",
-      "pos": [
-        430,
-        700
-      ],
-      "size": [
-        75,
-        26
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 56
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "CONDITIONING",
-          "links": [
-            57,
-            58
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": false,
-        "horizontal": false
-      }
-    },
-    {
       "id": 24,
       "type": "Reroute",
       "pos": [
@@ -179,8 +65,7 @@
           "name": "",
           "type": "MODEL",
           "links": [
-            54,
-            55
+            54
           ],
           "slot_index": 0
         }
@@ -237,10 +122,10 @@
         1280,
         681
       ],
-      "size": [
-        367.50910034179515,
-        383.84142456054633
-      ],
+      "size": {
+        "0": 367.50909423828125,
+        "1": 383.8414306640625
+      },
       "flags": {},
       "order": 12,
       "mode": 0,
@@ -339,12 +224,12 @@
         -124,
         906
       ],
-      "size": [
-        434.4091308593745,
-        440.4414123535148
-      ],
+      "size": {
+        "0": 434.40911865234375,
+        "1": 440.44140625
+      },
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "outputs": [
         {
@@ -367,110 +252,6 @@
       "widgets_values": [
         "example.png",
         "image"
-      ]
-    },
-    {
-      "id": 22,
-      "type": "Unsampler",
-      "pos": [
-        603,
-        832
-      ],
-      "size": {
-        "0": 315,
-        "1": 190
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 55
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 60
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 57
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 45
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            49
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Unsampler"
-      },
-      "widgets_values": [
-        25,
-        1,
-        "dpmpp_2m",
-        "karras"
-      ]
-    },
-    {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        -635,
-        661
-      ],
-      "size": {
-        "0": 315,
-        "1": 98
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            53
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            3,
-            5
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            50
-          ],
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "v1-5-pruned-emaonly.safetensors"
       ]
     },
     {
@@ -506,7 +287,7 @@
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 49
+          "link": 66
         }
       ],
       "outputs": [
@@ -533,6 +314,226 @@
         0,
         25,
         "disable"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "Reroute",
+      "pos": [
+        450,
+        670
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "CONDITIONING",
+          "links": [
+            61,
+            62
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": false,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 25,
+      "type": "Reroute",
+      "pos": [
+        430,
+        700
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "CONDITIONING",
+          "links": [
+            58,
+            63
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": false,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 20,
+      "type": "VAEEncode",
+      "pos": [
+        354,
+        894
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            64
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -635,
+        661
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            53,
+            65
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3,
+            5
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            50
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "v1-5-pruned-emaonly.safetensors"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "BNK_Unsampler",
+      "pos": [
+        608,
+        857
+      ],
+      "size": {
+        "0": 315,
+        "1": 214
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 65
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 62
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 63
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 64
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            66
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BNK_Unsampler"
+      },
+      "widgets_values": [
+        25,
+        0,
+        1,
+        "dpmpp_2m",
+        "karras"
       ]
     }
   ],
@@ -578,22 +579,6 @@
       "LATENT"
     ],
     [
-      45,
-      20,
-      0,
-      22,
-      3,
-      "LATENT"
-    ],
-    [
-      49,
-      22,
-      0,
-      12,
-      3,
-      "LATENT"
-    ],
-    [
       50,
       4,
       2,
@@ -634,28 +619,12 @@
       "MODEL"
     ],
     [
-      55,
-      24,
-      0,
-      22,
-      0,
-      "MODEL"
-    ],
-    [
       56,
       7,
       0,
       25,
       0,
       "*"
-    ],
-    [
-      57,
-      25,
-      0,
-      22,
-      2,
-      "CONDITIONING"
     ],
     [
       58,
@@ -674,20 +643,52 @@
       "*"
     ],
     [
-      60,
-      26,
-      0,
-      22,
-      1,
-      "CONDITIONING"
-    ],
-    [
       61,
       26,
       0,
       12,
       1,
       "CONDITIONING"
+    ],
+    [
+      62,
+      26,
+      0,
+      27,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      63,
+      25,
+      0,
+      27,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      64,
+      20,
+      0,
+      27,
+      3,
+      "LATENT"
+    ],
+    [
+      65,
+      4,
+      0,
+      27,
+      0,
+      "MODEL"
+    ],
+    [
+      66,
+      27,
+      0,
+      12,
+      3,
+      "LATENT"
     ]
   ],
   "groups": [],
