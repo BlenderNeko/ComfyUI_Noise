@@ -123,7 +123,7 @@ class GetSigma:
             "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
             "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
             "steps": ("INT", {"default": 10000, "min": 0, "max": 10000}),
-            "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+            "start_at_step": ("INT", {"default": 1, "min": 0, "max": 10000}),
             "end_at_step": ("INT", {"default": 10000, "min": 1, "max": 10000}),
             }}
     
@@ -188,6 +188,7 @@ class Unsampler:
                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "normalize": (["disable", "enable"], ),
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
                     "latent_image": ("LATENT", ),
@@ -198,7 +199,8 @@ class Unsampler:
 
     CATEGORY = "sampling"
         
-    def unsampler(self, model, cfg, sampler_name, steps, end_at_step, scheduler, positive, negative, latent_image):
+    def unsampler(self, model, cfg, sampler_name, steps, end_at_step, scheduler, normalize, positive, negative, latent_image):
+        normalize = normalize == "enable"
         device = comfy.model_management.get_torch_device()
         latent = latent_image
         latent_image = latent["samples"]
@@ -232,6 +234,10 @@ class Unsampler:
             pbar.update_absolute(step + 1, total_steps)
 
         samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas, start_step=0, last_step=end_at_step, callback=callback)
+        if normalize:
+            #technically doesn't normalize because unsampling is not guaranteed to end at a std given by the schedule
+            samples -= samples.mean()
+            samples /= samples.std()
         samples = samples.cpu()
         
         comfy.sample.cleanup_additional_models(models)

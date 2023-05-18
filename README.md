@@ -51,6 +51,7 @@ This node does the reverse of a sampler. It calculates the noise that would gene
 - **cfg**: classifier free guidance scale.
 - **sampler_name**: The name of the sampling technique to use.
 - **scheduler**: The type of schedule to use.
+- **normalize**: whether to normalize the noise before output. Useful when passing it on to an Inject Noise node which expects normalizes noise.
 - **positive**: Positive prompt.
 - **negative**: Negative prompt.
 - **latent_image**: The image to renoise.
