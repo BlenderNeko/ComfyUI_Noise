@@ -142,6 +142,7 @@ class GetSigma:
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
         sigmas = sampler.sigmas
         sigma = sigmas[start_at_step] - sigmas[end_at_step]
+        sigma /= model.model.latent_format.scale_factor
         return (sigma.cpu().numpy(),)
 
 class InjectNoise:
@@ -150,7 +151,7 @@ class InjectNoise:
         return {"required": {
             "latents":("LATENT",),
             
-            "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 20.0, "step": 0.01}),
+            "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
             },
             "optional":{
                 "noise":  ("LATENT",),
