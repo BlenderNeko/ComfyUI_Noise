@@ -13,6 +13,8 @@ This node lets you generate noise, you can find this node under `latent>noise` a
 - **batch_size**: batch size.
 
 ### Duplicate Batch Index:
+The functionality of this node has been moved to core, please use: `Latent>Batch>Repeat Latent Batch` and `Latent>Batch>Latent From Batch` instead. 
+
 This node lets you duplicate a certain sample in the batch, this can be used to duplicate e.g. encoded images but also noise generated from the node listed above. You can find this node under `latent` and it has the following settings:
 - **latents**: the latents.
 - **batch_index**: which sample in the latents to duplicate.

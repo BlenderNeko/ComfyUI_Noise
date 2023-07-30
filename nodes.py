@@ -14,7 +14,7 @@ def prepare_mask(mask, shape):
     mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(shape[2], shape[3]), mode="bilinear")
     mask = mask.expand((-1,shape[1],-1,-1))
     if mask.shape[0] < shape[0]:
-        mask = mask.repeat((shape[0] -1) / mask.shape[0] + 1, 1, 1, 1)[:shape[0]]
+        mask = mask.repeat((shape[0] -1) // mask.shape[0] + 1, 1, 1, 1)[:shape[0]]
     return mask
 
 class NoisyLatentImage:
@@ -173,8 +173,6 @@ class InjectNoise:
         noised = s["samples"].clone() + noise["samples"].clone() * strength
         if mask is not None:
             mask = prepare_mask(mask, noised.shape)
-            print(mask.shape)
-            print(noised.shape)
             noised = mask * noised + (1-mask) * latents["samples"]
         s["samples"] = noised
         return (s,)
@@ -249,7 +247,7 @@ class Unsampler:
     
 NODE_CLASS_MAPPINGS = {
     "BNK_NoisyLatentImage": NoisyLatentImage,
-    "BNK_DuplicateBatchIndex": DuplicateBatchIndex,
+    #"BNK_DuplicateBatchIndex": DuplicateBatchIndex,
     "BNK_SlerpLatent": LatentSlerp,
     "BNK_GetSigma": GetSigma,
     "BNK_InjectNoise": InjectNoise,
@@ -258,7 +256,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "BNK_NoisyLatentImage": "Noisy Latent Image",
-    "BNK_DuplicateBatchIndex": "Duplicate Batch Index",
+    #"BNK_DuplicateBatchIndex": "Duplicate Batch Index",
     "BNK_SlerpLatent": "Slerp Latents",
     "BNK_GetSigma": "Get Sigma",
     "BNK_InjectNoise": "Inject Noise",
