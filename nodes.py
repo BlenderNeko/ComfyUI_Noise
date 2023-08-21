@@ -213,7 +213,6 @@ class Unsampler:
             noise_mask = comfy.sample.prepare_mask(latent["noise_mask"], noise, device)
 
         real_model = None
-        comfy.model_management.load_model_gpu(model)
         real_model = model.model
 
         noise = noise.to(device)
@@ -223,6 +222,8 @@ class Unsampler:
         negative_copy = comfy.sample.broadcast_cond(negative, noise.shape[0], device)
 
         models = comfy.sample.get_additional_models(positive, negative)
+        comfy.model_management.load_models_gpu([model] + models, comfy.model_management.batch_area_memory(noise.shape[0] * noise.shape[2] * noise.shape[3]))
+        
 
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
