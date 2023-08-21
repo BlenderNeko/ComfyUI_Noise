@@ -222,7 +222,7 @@ class Unsampler:
         positive_copy = comfy.sample.broadcast_cond(positive, noise.shape[0], device)
         negative_copy = comfy.sample.broadcast_cond(negative, noise.shape[0], device)
 
-        models = comfy.sample.load_additional_models(positive, negative, model.model_dtype())
+        models = comfy.sample.get_additional_models(positive, negative)
 
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
