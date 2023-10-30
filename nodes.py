@@ -218,8 +218,8 @@ class Unsampler:
         noise = noise.to(device)
         latent_image = latent_image.to(device)
 
-        positive_copy = comfy.sample.broadcast_cond(positive, noise.shape[0], device)
-        negative_copy = comfy.sample.broadcast_cond(negative, noise.shape[0], device)
+        positive = comfy.sample.convert_cond(positive)
+        negative = comfy.sample.convert_cond(negative)
 
         models, inference_memory = comfy.sample.get_additional_models(positive, negative, model.model_dtype())
         comfy.model_management.load_models_gpu([model] + models, comfy.model_management.batch_area_memory(noise.shape[0] * noise.shape[2] * noise.shape[3]) + inference_memory)
@@ -233,7 +233,7 @@ class Unsampler:
         def callback(step, x0, x, total_steps):
             pbar.update_absolute(step + 1, total_steps)
 
-        samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas, start_step=0, last_step=end_at_step, callback=callback)
+        samples = sampler.sample(noise, positive, negative, cfg=cfg, latent_image=latent_image, force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas, start_step=0, last_step=end_at_step, callback=callback)
         if normalize:
             #technically doesn't normalize because unsampling is not guaranteed to end at a std given by the schedule
             samples -= samples.mean()
