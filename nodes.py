@@ -222,8 +222,8 @@ class Unsampler:
         negative = comfy.sample.convert_cond(negative)
 
         models, inference_memory = comfy.sample.get_additional_models(positive, negative, model.model_dtype())
-        comfy.model_management.load_models_gpu([model] + models, comfy.model_management.batch_area_memory(noise.shape[0] * noise.shape[2] * noise.shape[3]) + inference_memory)
         
+        comfy.model_management.load_models_gpu([model] + models, model.memory_required(noise.shape) + inference_memory)
 
         sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
