@@ -137,10 +137,7 @@ class GetSigma:
         device = comfy.model_management.get_torch_device()
         end_at_step = min(steps, end_at_step)
         start_at_step = min(start_at_step, end_at_step)
-        real_model = None
-        comfy.model_management.load_model_gpu(model)
-        real_model = model.model
-        sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
+        sampler = comfy.samplers.KSampler(model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=1.0, model_options=model.model_options)
         sigmas = sampler.sigmas
         sigma = sigmas[start_at_step] - sigmas[end_at_step]
         sigma /= model.model.latent_format.scale_factor
