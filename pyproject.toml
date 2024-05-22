@@ -1,0 +1,14 @@
+[project]
+name = "comfyui_noise"
+description = "This extension contains 6 nodes for ComfyUI that allows for more control and flexibility over the noise."
+version = "1.0.0"
+license = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/BlenderNeko/ComfyUI_Noise"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI_Noise"
+Icon = ""
